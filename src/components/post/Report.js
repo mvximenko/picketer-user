@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import resizeImage from '../../utils/resizeImage';
 import api from '../../utils/api';
 
 export default function Reports() {
@@ -11,10 +12,11 @@ export default function Reports() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    var formData = new FormData();
+    let formData = new FormData();
 
     for (const image of images) {
-      formData.append('images', image);
+      const resizedImage = await resizeImage(image);
+      formData.append('images', resizedImage);
     }
 
     const res = await api.post('/report', formData);
@@ -23,7 +25,13 @@ export default function Reports() {
 
   return (
     <form onSubmit={onSubmit}>
-      <input type='file' name='images' onChange={onFileChange} multiple />
+      <input
+        type='file'
+        name='images'
+        accept='image/*'
+        onChange={onFileChange}
+        multiple
+      />
       <button type='submit'>Upload</button>
     </form>
   );
