@@ -25,7 +25,9 @@ export default function PostForm() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const hasEmptyFields = Object.values(post).some((value) => value === '');
+      const hasEmptyFields = [title, location, description].some(
+        (value) => value === ''
+      );
 
       if (hasEmptyFields) {
         toast.error('Please fill in all fields');

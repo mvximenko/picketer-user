@@ -7,6 +7,7 @@ const initialState = {
     title: '',
     location: '',
     description: '',
+    picketer: '',
   },
   loading: true,
   error: {},
@@ -24,11 +25,20 @@ const post = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
+    getPostSuccess: (state, action) => {
+      state.post = action.payload;
+      state.loading = false;
+    },
+    getPostFailure: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
     setPicketerSuccess: (state, action) => {
       const foundIndex = state.posts.findIndex(
-        (post) => post._id == action.payload.id
+        (post) => post._id === action.payload.id
       );
       state.posts[foundIndex].picketer = action.payload.email;
+      state.post.picketer = action.payload.email;
     },
     updatePost: (state, action) => {
       state.post[action.payload.name] = action.payload.value;
@@ -42,6 +52,8 @@ const post = createSlice({
 export const {
   getPostsSuccess,
   getPostsFailure,
+  getPostSuccess,
+  getPostFailure,
   setPicketerSuccess,
   updatePost,
   resetPost,
@@ -61,6 +73,20 @@ export const getPosts = (query) => async (dispatch) => {
   }
 };
 
+export const getPost = (id) => async (dispatch) => {
+  try {
+    const res = await api.get(`/posts/${id}`);
+    dispatch(getPostSuccess(res.data));
+  } catch (err) {
+    dispatch(
+      getPostFailure({
+        msg: err.response.statusText,
+        status: err.response.status,
+      })
+    );
+  }
+};
+
 export const becomePicketer = (id, email) => async (dispatch) => {
   const body = { id, email };
   try {
@@ -69,6 +95,7 @@ export const becomePicketer = (id, email) => async (dispatch) => {
       dispatch(setPicketerSuccess({ id, email }));
     }
   } catch (err) {
+    console.log(err);
     dispatch(
       getPostsFailure({
         msg: err.response.statusText,
