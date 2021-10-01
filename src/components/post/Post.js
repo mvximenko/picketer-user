@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Moment from 'react-moment';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useSelector } from '../../redux/store';
 import {
@@ -14,7 +15,7 @@ export default function Post() {
   const dispatch = useDispatch();
   const email = useSelector((state) => state.auth.user.email);
   const post = useSelector((state) => state.post.post, shallowEqual);
-  const { title, location, picketer, description } = post;
+  const { title, location, picketer, description, date } = post;
 
   useEffect(() => {
     if (id) dispatch(getPost(id));
@@ -26,6 +27,10 @@ export default function Post() {
       <h1>Title: {title}</h1>
       <h1>Location: {location}</h1>
       <h1>Description: {description}</h1>
+      <h1>
+        {`Date: `}
+        <Moment format='HH:MM DD/MM/YY'>{date}</Moment>
+      </h1>
 
       {picketer ? (
         <h1>Picketer: {picketer}</h1>

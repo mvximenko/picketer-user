@@ -4,7 +4,7 @@ import Moment from 'react-moment';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useSelector } from '../../redux/store';
 import { getPosts, becomePicketer } from '../../redux/slices/postSlice';
-import { Container, StyledLink, Paragraph } from './PostsStyles';
+import { Container, StyledLink, Info } from './PostsStyles';
 
 export default function Posts() {
   const dispatch = useDispatch();
@@ -25,22 +25,20 @@ export default function Posts() {
       {posts.map((post) => (
         <Container key={post._id}>
           <StyledLink to={`/posts/${post._id}`}>
-            <Paragraph>Description: {post.description}</Paragraph>
-            <Paragraph>Location: {post.location}</Paragraph>
-            <Paragraph>
+            <Info>Description: {post.description}</Info>
+            <Info>Location: {post.location}</Info>
+            <Info>
               {`Date: `}
               <Moment format='HH:MM DD/MM/YY'>{post.date}</Moment>
-            </Paragraph>
+            </Info>
           </StyledLink>
 
           {post.picketer ? (
-            <Paragraph>Picketer: {post.picketer}</Paragraph>
+            <Info>Picketer: {post.picketer}</Info>
           ) : (
-            <Paragraph
-              onClick={() => dispatch(becomePicketer(post._id, email))}
-            >
+            <Info onClick={() => dispatch(becomePicketer(post._id, email))}>
               Become a picketer
-            </Paragraph>
+            </Info>
           )}
         </Container>
       ))}

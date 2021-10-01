@@ -8,7 +8,7 @@ export const Container = styled.div`
   margin: 10px;
 `;
 
-export const Paragraph = styled.div`
+export const Info = styled.span`
   width: 20%;
   margin: 10px;
 `;
