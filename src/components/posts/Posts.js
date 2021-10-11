@@ -1,10 +1,22 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useSelector } from '../../redux/store';
 import { getPosts, becomePicketer } from '../../redux/slices/postSlice';
-import { Container, StyledLink, Info } from './PostsStyles';
+import {
+  Container,
+  Top,
+  Heading,
+  CreateLink,
+  Card,
+  StyledLink,
+  Title,
+  HR,
+  Description,
+  Location,
+  Picketer,
+  DateInfo,
+} from './PostsStyles';
 
 export default function Posts() {
   const dispatch = useDispatch();
@@ -16,32 +28,38 @@ export default function Posts() {
   }, [dispatch]);
 
   return (
-    <>
-      <div>
-        <h1>Active</h1>
-        <Link to='/create-post'>Create New Post</Link>
-      </div>
+    <Container>
+      <Top>
+        <Heading>Posts</Heading>
+        <CreateLink to='/create-post'>Create New Post</CreateLink>
+      </Top>
 
       {posts.map((post) => (
-        <Container key={post._id}>
+        <Card key={post._id}>
           <StyledLink to={`/posts/${post._id}`}>
-            <Info>Description: {post.description}</Info>
-            <Info>Location: {post.location}</Info>
-            <Info>
-              {`Date: `}
-              <Moment format='HH:MM DD/MM/YY'>{post.date}</Moment>
-            </Info>
+            <Title>{post.title}</Title>
           </StyledLink>
+          <HR />
+
+          <Description>{post.description}</Description>
+          <HR />
+
+          <Location>Location: {post.location}</Location>
+          <HR />
 
           {post.picketer ? (
-            <Info>Picketer: {post.picketer}</Info>
+            <Picketer>Picketer: {post.picketer}</Picketer>
           ) : (
-            <Info onClick={() => dispatch(becomePicketer(post._id, email))}>
+            <Picketer onClick={() => dispatch(becomePicketer(post._id, email))}>
               Become a picketer
-            </Info>
+            </Picketer>
           )}
-        </Container>
+
+          <DateInfo>
+            <Moment format='HH:MM DD/MM/YY'>{post.date}</Moment>
+          </DateInfo>
+        </Card>
       ))}
-    </>
+    </Container>
   );
 }
