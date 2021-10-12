@@ -1,22 +1,32 @@
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useSelector } from '../../redux/store';
-import { resetPost, updatePost } from '../../redux/slices/postSlice';
+import { getPost, resetPost, updatePost } from '../../redux/slices/postSlice';
 import api from '../../utils/api';
 import {
-  Container,
+  OuterContainer,
+  InnerContainer,
+  Form,
   Heading,
-  Grid,
-  Input,
-  InputSubmit,
   Wrapper,
+  Input,
   TextArea,
+  Buttons,
+  Button,
 } from './PostFormStyles';
 
 export default function PostForm() {
+  const { id } = useParams();
   const dispatch = useDispatch();
   const post = useSelector((state) => state.post.post, shallowEqual);
   const { title, location, description } = post;
+
+  useEffect(() => {
+    if (id) dispatch(getPost(id));
+    return () => dispatch(resetPost());
+  }, [id, dispatch]);
 
   const onChange = (e) => {
     dispatch(updatePost({ name: e.target.name, value: e.target.value }));
@@ -25,12 +35,16 @@ export default function PostForm() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+
       const hasEmptyFields = [title, location, description].some(
         (value) => value === ''
       );
 
       if (hasEmptyFields) {
         toast.error('Please fill in all fields');
+      } else if (id) {
+        await api.put('/posts/post', post);
+        toast.success('Post updated');
       } else {
         await api.post('/posts', post);
         toast.success('Post created');
@@ -42,39 +56,55 @@ export default function PostForm() {
   };
 
   return (
-    <Container>
-      <Heading>Add Post</Heading>
-      <form onSubmit={handleSubmit}>
-        <Grid>
-          <Input
-            type='text'
-            name='title'
-            placeholder='Title'
-            value={title}
-            onChange={onChange}
-          />
-          <Input
-            type='text'
-            name='location'
-            placeholder='Location'
-            value={location}
-            onChange={onChange}
-          />
-        </Grid>
+    <OuterContainer>
+      <InnerContainer>
+        <Form onSubmit={handleSubmit}>
+          <Heading>{id ? 'Edit Post' : 'Add Post'}</Heading>
 
-        <TextArea
-          type='text'
-          name='description'
-          id='description'
-          value={description}
-          onChange={onChange}
-          placeholder='Description...'
-        />
+          <Wrapper>
+            <label htmlFor='title'>Title</label>
+            <Input
+              type='text'
+              name='title'
+              id='title'
+              placeholder='Title'
+              value={title}
+              onChange={onChange}
+            />
+          </Wrapper>
 
-        <Wrapper>
-          <InputSubmit type='submit' value='Add Post' />
-        </Wrapper>
-      </form>
-    </Container>
+          <Wrapper>
+            <label htmlFor='location'>Location</label>
+            <Input
+              type='text'
+              name='location'
+              id='location'
+              className=''
+              placeholder='Location'
+              value={location}
+              onChange={onChange}
+            />
+          </Wrapper>
+
+          <Wrapper>
+            <label htmlFor='description'>Description</label>
+            <TextArea
+              type='text'
+              name='description'
+              id='description'
+              placeholder='Describe everything about this post here'
+              value={description}
+              onChange={onChange}
+            />
+          </Wrapper>
+
+          <Buttons>
+            <Button type='submit' variant='blue'>
+              {id ? 'Edit Post' : 'Add Post'}
+            </Button>
+          </Buttons>
+        </Form>
+      </InnerContainer>
+    </OuterContainer>
   );
 }
