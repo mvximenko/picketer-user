@@ -9,6 +9,18 @@ import {
   becomePicketer,
 } from '../../redux/slices/postSlice';
 import Report from './Report';
+import {
+  Container,
+  Top,
+  Heading,
+  Card,
+  Title,
+  HR,
+  Description,
+  Location,
+  Picketer,
+  DateInfo,
+} from './PostStyles';
 
 export default function Post() {
   const { id } = useParams();
@@ -23,24 +35,36 @@ export default function Post() {
   }, [id, dispatch]);
 
   return (
-    <>
-      <h1>Title: {title}</h1>
-      <h1>Location: {location}</h1>
-      <h1>Description: {description}</h1>
-      <h1>
-        {`Date: `}
-        <Moment format='HH:MM DD/MM/YY'>{date}</Moment>
-      </h1>
+    <Container>
+      <Top>
+        <Heading>Post</Heading>
+      </Top>
 
-      {picketer ? (
-        <h1>Picketer: {picketer}</h1>
-      ) : (
-        <h1 onClick={() => dispatch(becomePicketer(id, email))}>
-          Become a picketer
-        </h1>
-      )}
+      <Card>
+        <Title>{title}</Title>
+
+        <HR />
+
+        <Description>{description}</Description>
+        <HR />
+
+        <Location>Location: {location}</Location>
+        <HR />
+
+        {picketer ? (
+          <Picketer>Picketer: {picketer}</Picketer>
+        ) : (
+          <Picketer onClick={() => dispatch(becomePicketer(id, email))}>
+            Become a picketer
+          </Picketer>
+        )}
+
+        <DateInfo>
+          <Moment format='HH:MM DD/MM/YY'>{date}</Moment>
+        </DateInfo>
+      </Card>
 
       {email === picketer && <Report />}
-    </>
+    </Container>
   );
 }
