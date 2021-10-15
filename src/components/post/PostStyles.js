@@ -20,7 +20,7 @@ export const Card = styled.div`
 `;
 
 export const Title = styled.h1`
-  ${tw`px-4 py-2 hover:underline block text-lg my-2 font-bold text-gray-800`}
+  ${tw`px-4 py-2 block text-lg my-2 font-bold text-gray-800`}
 `;
 
 export const HR = styled.hr`

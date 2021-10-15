@@ -34,3 +34,19 @@ export const Button = styled.button`
     p-2 rounded transition duration-500
   `}
 `;
+
+export const Paragraph = styled.p`
+  ${tw`text-xl font-semibold leading-tight`}
+`;
+
+export const Container = styled.div`
+  ${tw`flex justify-between`}
+`;
+
+export const IconWrapper = styled.span`
+  ${tw`p-1 m-1 cursor-pointer hover:opacity-50`}
+
+  svg {
+    ${tw`w-4 h-4 `}
+  }
+`;

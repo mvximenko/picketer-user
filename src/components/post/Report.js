@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import resizeImage from '../../utils/resizeImage';
 import api from '../../utils/api';
-import { Top, Heading, Form, DropArea, Input, Button } from './ReportStyles';
+import { ReactComponent as XMarkIcon } from '../../assets/x-mark.svg';
+import {
+  Top,
+  Heading,
+  Form,
+  DropArea,
+  Input,
+  Button,
+  Paragraph,
+  Container,
+  IconWrapper,
+} from './ReportStyles';
 
 export default function Reports() {
   const [drag, setDrag] = useState(false);
@@ -14,12 +26,27 @@ export default function Reports() {
   const onFileChange = () => console.log('Changed');
 
   const onFileDrop = (e) => {
-    const newImage = e.target.files[0];
-    if (newImage) {
-      const updatedList = [...images, newImage];
-      setImages(updatedList);
-      onFileChange(updatedList);
+    const { files } = e.target;
+
+    if (files.length) {
+      let imgs = images;
+      for (const file of files) {
+        if (!file.name.match(/\.(jpg|jpeg|png)$/)) {
+          toast.error(`${file.name} is not valid`);
+        } else {
+          imgs = [...imgs, file];
+        }
+      }
+      setImages(imgs);
+      onFileChange(imgs);
     }
+  };
+
+  const removeFile = (image) => {
+    const updatedList = [...images];
+    updatedList.splice(images.indexOf(image), 1);
+    setImages(updatedList);
+    onFileChange(updatedList);
   };
 
   const onSubmit = async (e) => {
@@ -32,8 +59,13 @@ export default function Reports() {
       formData.append('images', resizedImage);
     }
 
-    const res = await api.post('/report', formData);
-    console.log(res.data);
+    try {
+      await api.post('/report', formData);
+      toast.success('Uploaded');
+      setImages([]);
+    } catch (err) {
+      toast.error(err.response.data);
+    }
   };
 
   return (
@@ -49,7 +81,7 @@ export default function Reports() {
           onDrop={onDrop}
           drag={drag}
         >
-          <h5>Click or Drop your files here</h5>
+          <h5>Click or Drop your images here</h5>
 
           <Input
             type='file'
@@ -61,6 +93,24 @@ export default function Reports() {
         </DropArea>
 
         <Button type='submit'>Upload</Button>
+
+        {images.length > 0 && (
+          <>
+            <Top>
+              <Paragraph>Ready to upload</Paragraph>
+            </Top>
+
+            {images.map((item, index) => (
+              <Container key={index}>
+                <p>{item.name}</p>
+
+                <IconWrapper onClick={() => removeFile(item)}>
+                  <XMarkIcon />
+                </IconWrapper>
+              </Container>
+            ))}
+          </>
+        )}
       </Form>
     </>
   );
