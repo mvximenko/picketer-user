@@ -35,8 +35,12 @@ const user = createSlice({
   },
 });
 
-export const { getUserSuccess, getUserFailure, updateUser, resetUser } =
-  user.actions;
+export const {
+  getUserSuccess,
+  getUserFailure,
+  updateUser,
+  resetUser,
+} = user.actions;
 
 export const getUser = (id) => async (dispatch) => {
   try {

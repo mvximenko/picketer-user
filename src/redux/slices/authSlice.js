@@ -6,7 +6,14 @@ const initialState = {
   token: localStorage.getItem('token'),
   isAuthenticated: null,
   loading: true,
-  user: null,
+  user: {
+    name: '',
+    surname: '',
+    patronymic: '',
+    email: '',
+    role: '',
+    password: '',
+  },
 };
 
 const auth = createSlice({
@@ -22,7 +29,7 @@ const auth = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.loading = false;
-      state.user = null;
+      state.user = initialState.user;
     },
     getUserSuccess: (state, action) => {
       state.isAuthenticated = true;
@@ -44,8 +51,8 @@ export const loadUser = () => async (dispatch) => {
 };
 
 export const login = (email, password) => async (dispatch) => {
-  const body = { email, password };
   try {
+    const body = { email, password };
     const res = await api.post('/auth', body);
     dispatch(loginSuccess(res.data.token));
     dispatch(loadUser());

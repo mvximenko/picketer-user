@@ -88,14 +88,13 @@ export const getPost = (id) => async (dispatch) => {
 };
 
 export const becomePicketer = (id, email) => async (dispatch) => {
-  const body = { id, email };
   try {
+    const body = { id, email };
     const res = await api.put('/posts/picketer', body);
     if (res.status === 200) {
       dispatch(setPicketerSuccess({ id, email }));
     }
   } catch (err) {
-    console.log(err);
     dispatch(
       getPostsFailure({
         msg: err.response.statusText,

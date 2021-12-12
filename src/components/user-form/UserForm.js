@@ -23,7 +23,7 @@ export default function UserForm() {
   const { name, surname, patronymic, password } = user;
 
   useEffect(() => {
-    if (id) dispatch(getUser(id));
+    dispatch(getUser(id));
     return () => dispatch(resetUser());
   }, [id, dispatch]);
 
@@ -97,7 +97,7 @@ export default function UserForm() {
                 name='password'
                 id='password'
                 placeholder='Password'
-                value={password}
+                value={password ? password : ''}
                 onChange={onChange}
               />
             </Wrapper>
