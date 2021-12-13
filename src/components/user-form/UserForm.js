@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useSelector } from '../../redux/store';
-import { getUser, resetUser, updateUser } from '../../redux/slices/userSlice';
+import { getUser, getUserSuccess } from '../../redux/slices/userSlice';
 import api from '../../utils/api';
 import {
   OuterContainer,
@@ -11,36 +11,55 @@ import {
   Heading,
   Grid,
   Wrapper,
+  Span,
   Input,
   Buttons,
   Button,
 } from './UserFormStyles';
 
+const initialState = {
+  name: '',
+  surname: '',
+  patronymic: '',
+  email: '',
+  password: '',
+};
+
 export default function UserForm() {
   const dispatch = useDispatch();
-  const id = useSelector((state) => state.auth.user._id);
-  const user = useSelector((state) => state.user.user, shallowEqual);
-  const { name, surname, patronymic, password } = user;
+  const { user, loading } = useSelector((state) => state.user, shallowEqual);
+
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState(initialState);
+  const { name, surname, patronymic, password } = formData;
 
   useEffect(() => {
-    dispatch(getUser(id));
-    return () => dispatch(resetUser());
-  }, [id, dispatch]);
+    if (!user) dispatch(getUser());
+    if (!loading && user) {
+      const userData = { ...initialState };
+      for (const key in user) {
+        if (key in userData) userData[key] = user[key];
+      }
+      setFormData(userData);
+    }
+  }, [user, loading, dispatch]);
 
   const onChange = (e) => {
-    dispatch(updateUser({ name: e.target.name, value: e.target.value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const hasEmptyFields = Object.values(user).some((value) => value === '');
+      const { password, ...rest } = formData;
+      const hasEmptyFields = Object.values(rest).some((value) => value === '');
 
       if (hasEmptyFields) {
         toast.error('Please fill in all fields');
       } else {
-        await api.put('/users/profile', user);
+        await api.put('/users/profile', open ? formData : rest);
         toast.success('User updated');
+        getUserSuccess(formData);
       }
     } catch (err) {
       toast.error(err.toString());
@@ -92,14 +111,24 @@ export default function UserForm() {
 
             <Wrapper>
               <label htmlFor='password'>Password</label>
-              <Input
-                type='password'
-                name='password'
-                id='password'
-                placeholder='Password'
-                value={password ? password : ''}
-                onChange={onChange}
-              />
+
+              <Span onClick={() => setOpen(!open)}>
+                {open ? 'Close' : 'Change'}
+              </Span>
+
+              {open && (
+                <Input
+                  type='password'
+                  name='password'
+                  id='password'
+                  autoComplete='off'
+                  placeholder='Password'
+                  minLength='6'
+                  required
+                  value={password}
+                  onChange={onChange}
+                />
+              )}
             </Wrapper>
 
             <Buttons>
