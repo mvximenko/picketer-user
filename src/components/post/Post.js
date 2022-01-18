@@ -8,6 +8,7 @@ import {
   resetPost,
   becomePicketer,
 } from '../../redux/slices/postSlice';
+import Spinner from '../spinner/Spinner';
 import Report from './Report';
 import {
   Container,
@@ -25,7 +26,7 @@ import {
 export default function Post() {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const email = useSelector((state) => state.auth.user.email);
+  const { email, error } = useSelector((state) => state.post);
   const post = useSelector((state) => state.post.post, shallowEqual);
   const { title, location, picketer, description, date } = post;
 
@@ -33,6 +34,9 @@ export default function Post() {
     if (id) dispatch(getPost(id));
     return () => dispatch(resetPost());
   }, [id, dispatch]);
+
+  if (!error && !title) return <Spinner />;
+  if (error) return <h1>Not Found</h1>;
 
   return (
     <Container>

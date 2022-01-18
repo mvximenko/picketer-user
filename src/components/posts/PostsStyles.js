@@ -24,16 +24,12 @@ export const CreateLink = styled(Link)`
 export const Card = styled.div`
   ${tw`
     w-full mb-5 transition-all duration-150 bg-white
-    rounded-lg shadow-lg hover:shadow-xl
+    rounded-lg shadow-lg hover:shadow-xl cursor-pointer
   `}
 `;
 
-export const StyledLink = styled(Link)`
-  ${tw`px-4 py-2 hover:underline block`}
-`;
-
 export const Title = styled.h1`
-  ${tw`text-lg my-2 font-bold text-gray-800`}
+  ${tw`text-lg my-2 font-bold text-gray-800 px-4 py-2 block`}
 `;
 
 export const HR = styled.hr`

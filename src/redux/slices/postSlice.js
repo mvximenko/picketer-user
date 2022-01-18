@@ -10,13 +10,17 @@ const initialState = {
     picketer: '',
   },
   loading: true,
-  error: {},
+  error: null,
 };
 
 const post = createSlice({
   name: 'post',
   initialState,
   reducers: {
+    getPostsStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
     getPostsSuccess: (state, action) => {
       state.posts = action.payload;
       state.loading = false;
@@ -27,10 +31,6 @@ const post = createSlice({
     },
     getPostSuccess: (state, action) => {
       state.post = action.payload;
-      state.loading = false;
-    },
-    getPostFailure: (state, action) => {
-      state.error = action.payload;
       state.loading = false;
     },
     setPicketerSuccess: (state, action) => {
@@ -50,10 +50,10 @@ const post = createSlice({
 });
 
 export const {
+  getPostsStart,
   getPostsSuccess,
   getPostsFailure,
   getPostSuccess,
-  getPostFailure,
   setPicketerSuccess,
   updatePost,
   resetPost,
@@ -61,6 +61,7 @@ export const {
 
 export const getPosts = (query) => async (dispatch) => {
   try {
+    dispatch(getPostsStart());
     const res = await api.get(query ? `/posts${query}` : '/posts');
     dispatch(getPostsSuccess(res.data));
   } catch (err) {
@@ -75,11 +76,12 @@ export const getPosts = (query) => async (dispatch) => {
 
 export const getPost = (id) => async (dispatch) => {
   try {
+    dispatch(getPostsStart());
     const res = await api.get(`/posts/${id}`);
     dispatch(getPostSuccess(res.data));
   } catch (err) {
     dispatch(
-      getPostFailure({
+      getPostsFailure({
         msg: err.response.statusText,
         status: err.response.status,
       })

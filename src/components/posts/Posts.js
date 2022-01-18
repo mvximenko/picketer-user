@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import Moment from 'react-moment';
 import { useDispatch, shallowEqual } from 'react-redux';
 import { useSelector } from '../../redux/store';
@@ -9,7 +10,6 @@ import {
   Heading,
   CreateLink,
   Card,
-  StyledLink,
   Title,
   HR,
   Description,
@@ -20,6 +20,7 @@ import {
 
 export default function Posts() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const email = useSelector((state) => state.auth.user.email);
   const posts = useSelector((state) => state.post.posts, shallowEqual);
 
@@ -27,18 +28,24 @@ export default function Posts() {
     dispatch(getPosts());
   }, [dispatch]);
 
+  const handleClick = (e, id) => {
+    if (window.getSelection().toString()) {
+      e.preventDefault();
+    } else {
+      history.push(`/posts/${id}`);
+    }
+  };
+
   return (
     <Container>
       <Top>
         <Heading>Posts</Heading>
-        <CreateLink to='/create-post'>Create New Post</CreateLink>
+        <CreateLink to='/create-post'>Create Post</CreateLink>
       </Top>
 
       {posts.map((post) => (
-        <Card key={post._id}>
-          <StyledLink to={`/posts/${post._id}`}>
-            <Title>{post.title}</Title>
-          </StyledLink>
+        <Card key={post._id} onClick={(e) => handleClick(e, post._id)}>
+          <Title>{post.title}</Title>
           <HR />
 
           <Description>{post.description}</Description>
@@ -50,7 +57,12 @@ export default function Posts() {
           {post.picketer ? (
             <Picketer>Picketer: {post.picketer}</Picketer>
           ) : (
-            <Picketer onClick={() => dispatch(becomePicketer(post._id, email))}>
+            <Picketer
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch(becomePicketer(post._id, email));
+              }}
+            >
               Become a picketer
             </Picketer>
           )}
