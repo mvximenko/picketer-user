@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import { shallowEqual } from 'react-redux';
+import { useSelector } from '../../redux/store';
 import resizeImage from '../../utils/resizeImage';
 import api from '../../utils/api';
 import { ReactComponent as XMarkIcon } from '../../assets/x-mark.svg';
@@ -16,6 +18,8 @@ import {
 } from './ReportStyles';
 
 export default function Reports() {
+  const userID = useSelector((state) => state.auth.user._id);
+  const post = useSelector((state) => state.post.post, shallowEqual);
   const [drag, setDrag] = useState(false);
   const [images, setImages] = useState([]);
 
@@ -58,6 +62,12 @@ export default function Reports() {
       const resizedImage = await resizeImage(image);
       formData.append('images', resizedImage);
     }
+
+    formData.append('user', userID);
+    formData.append('post', post._id);
+    formData.append('creator', post.user);
+    formData.append('title', post.title);
+    formData.append('picketer', post.picketer);
 
     try {
       await api.post('/report', formData);

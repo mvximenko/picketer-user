@@ -26,7 +26,8 @@ import {
 export default function Post() {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { email, error } = useSelector((state) => state.post);
+  const error = useSelector((state) => state.post.error);
+  const email = useSelector((state) => state.auth.user.email);
   const post = useSelector((state) => state.post.post, shallowEqual);
   const { title, location, picketer, description, date } = post;
 
