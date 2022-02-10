@@ -70,4 +70,28 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Any other custom service worker logic can go here.
+self.addEventListener('push', (event) => {
+  const data = event.data.json();
+  self.registration.showNotification(data.title, {
+    body: 'Picketer',
+    icon:
+      'https://raw.githubusercontent.com/mvximenko/youdo/master/public/logo192.png',
+    vibrate: [100, 50, 100],
+    data: {
+      primaryKey: data.primaryKey,
+    },
+  });
+});
+
+self.addEventListener('notificationclick', (event) => {
+  const notification = event.notification;
+  const primaryKey = notification.data.primaryKey;
+  const action = event.action;
+
+  if (action === 'close') {
+    notification.close();
+  } else {
+    clients.openWindow(`https://picketer-user.netlify.app/${primaryKey}`);
+    notification.close();
+  }
+});

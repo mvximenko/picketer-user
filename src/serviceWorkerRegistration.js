@@ -10,6 +10,12 @@
 // To learn more about the benefits of this model and instructions on how to
 // opt-in, read https://cra.link/PWA
 
+import urlBase64ToUint8Array from './utils/urlBase64ToUint8Array';
+import api from './utils/api';
+
+const publicVapidKey =
+  'BBBNRHL4eUQrGnwjCNxsN_8QJSVc4Ql4ClW-aKyDs_l9NIYAU1LwNtZOoAKwIJxLmrA1UtguUnwz8A2ucohkMdQ';
+
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
@@ -126,6 +132,23 @@ function checkValidServiceWorker(swUrl, config) {
         'No internet connection found. App is running in offline mode.'
       );
     });
+}
+
+export async function subscribeUserToPush(registration, id) {
+  try {
+    let subscription = await registration.pushManager.getSubscription();
+    if (subscription === null) {
+      let subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+      });
+      await api.put('/users/subscribe', { subscription, id });
+    } else {
+      console.log(subscription, 'User is already subscribed');
+    }
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export function unregister() {
