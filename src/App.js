@@ -9,6 +9,7 @@ import Post from './components/post/Post';
 import Posts from './components/posts/Posts';
 import PostForm from './components/post-form/PostForm';
 import UserForm from './components/user-form/UserForm';
+import RegisterUser from './components/user-form/RegisterUser';
 import PrivateRoute from './components/routing/PrivateRoute';
 import Navbar from './components/navbar/Navbar';
 import setAuthToken from './utils/setAuthToken';
@@ -36,6 +37,7 @@ export default function App() {
         <PrivateRoute exact path='/posts/:id' component={Post} />
         <PrivateRoute exact path='/create-post' component={PostForm} />
         <PrivateRoute exact path='/profile' component={UserForm} />
+        <Route exact path='/invite/:id' component={RegisterUser} />
         <Route exact path='/login' component={Login} />
       </Switch>
     </>
