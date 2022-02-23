@@ -41,3 +41,10 @@ export const Picketer = styled.div`
 export const DateInfo = styled.p`
   ${tw`px-4 pb-2 mb-2 flex justify-end text-xs text-gray-600`}
 `;
+
+export const Button = styled.button`
+  ${tw`
+    bg-red-500 hover:bg-red-600 text-white
+    p-2 rounded transition duration-500 w-full mb-10
+  `}
+`;
